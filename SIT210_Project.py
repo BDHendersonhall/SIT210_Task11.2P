@@ -177,7 +177,7 @@ class MyServer(BaseHTTPRequestHandler):
         elif post_data == 'Yes':
             GPIO.output(20, GPIO.HIGH)
         elif post_data == 'No':
-            GPIO.output(20, GPIO.HIGH)
+            GPIO.output(20, GPIO.LOW)
         print("Led is {}".format(post_data))
         self._redirect('/')    # Redirect back to the root url
 
