@@ -188,14 +188,14 @@ if __name__ == '__main__':
     http_server = HTTPServer((host_name, host_port), MyServer)
     print("Server Starts - %s:%s" % (host_name, host_port))
 
-    # If no messages have been received for 5 minutes blink the green led
-    while true:
-        t = datetime.now() - topics['msgReceived']
-        if (t.total_seconds() > 300):
-            GPIO.output(21, GPIO.HIGH)
-            time.sleep(1)
-            GPIO.output(21, GPIO.LOW)
-            time.sleep(1)
+    # If no messages have been received for 5 minutes blink the green led (need to move this section to a thread)
+    #while true:
+    #    t = datetime.now() - topics['msgReceived']
+    #    if (t.total_seconds() > 300):
+    #        GPIO.output(21, GPIO.HIGH)
+    #        time.sleep(1)
+    #        GPIO.output(21, GPIO.LOW)
+    #        time.sleep(1)
                 
     try:
         http_server.serve_forever()
