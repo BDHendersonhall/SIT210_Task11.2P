@@ -1,6 +1,8 @@
 import RPi.GPIO as GPIO
 import os
 import time
+from datetime import datetime
+from datetime import timedelta
 import paho.mqtt.client as mqtt
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -27,7 +29,7 @@ pwm = GPIO.PWM(pins['buzzer'], 100)
 pwm.start(0)
 GPIO.output(pins['indigo'], GPIO.HIGH) # buzzer/audible alarm is enabled by default
 
-topics = {'Motion':'','Proximity':'','Light':'','Temperature':'','Humidity':''}
+topics = {'Motion':'','Proximity':'','Light':'','Temperature':'','Humidity':'','msgReceived':''}
 
 clients = [
 {'broker':'test.mosquitto.org','port':1883,'name':'Motion','Topic':'Motion'},
@@ -75,7 +77,7 @@ def msg_handle():
         else:
             x = 100 - float(topics['Proximity']) / 1.0
             pwm.ChangeDutyCycle(x)
-
+        
 def pins_low():
     for pin in pins.values():
         GPIO.output(pin, GPIO.LOW)
@@ -85,6 +87,7 @@ def messageFunction (client, userdata, message):
     message = str(message.payload.decode("utf-8"))
     if ( message != 'nan' and message != '-1'):
         topics[topic] = message
+        topics[msgReceived] = datetime.now()
     msg_handle()
 
 def clientSubscribe(client, clientName):
@@ -180,14 +183,22 @@ class MyServer(BaseHTTPRequestHandler):
             GPIO.output(20, GPIO.LOW)
         print("Led is {}".format(post_data))
         self._redirect('/')    # Redirect back to the root url
-
+       
 if __name__ == '__main__':
     http_server = HTTPServer((host_name, host_port), MyServer)
     print("Server Starts - %s:%s" % (host_name, host_port))
 
     try:
         http_server.serve_forever()
-
+        # If no messages have been received for 5 minutes blink the green led
+        while true:
+            t = datetime.now() - topics['msgReceived']
+            if (t.total_seconds() > 300):
+                GPIO.output(21, GPIO.HIGH)
+                time.sleep(2)
+                GPIO.output(21, GPIO.LOW)
+                time.sleep(2)
+                
     except KeyboardInterrupt:
         http_server.server_close()
         pwm.stop()
