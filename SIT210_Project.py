@@ -174,13 +174,13 @@ class MyServer(BaseHTTPRequestHandler):
         post_data = post_data.split("=")[1]    # Only keep the value
 
         if post_data == 'On':
-            GPIO.output(16, GPIO.HIGH)
+            GPIO.output(pins['indigo'], GPIO.HIGH)
         elif post_data == 'Off':
-            GPIO.output(16, GPIO.LOW)
+            GPIO.output(pins['indigo'], GPIO.LOW)
         elif post_data == 'Yes':
-            GPIO.output(20, GPIO.HIGH)
+            GPIO.output(pins['blue'], GPIO.HIGH)
         elif post_data == 'No':
-            GPIO.output(20, GPIO.LOW)
+            GPIO.output(pins['blue'], GPIO.LOW)
         print("Led is {}".format(post_data))
         self._redirect('/')    # Redirect back to the root url
        
@@ -192,9 +192,9 @@ if __name__ == '__main__':
     #while true:
     #    t = datetime.now() - topics['msgReceived']
     #    if (t.total_seconds() > 300):
-    #        GPIO.output(21, GPIO.HIGH)
+    #        GPIO.output(pins['green'], GPIO.HIGH)
     #        time.sleep(1)
-    #        GPIO.output(21, GPIO.LOW)
+    #        GPIO.output(pins['green'], GPIO.LOW)
     #        time.sleep(1)
                 
     try:
