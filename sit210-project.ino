@@ -97,5 +97,5 @@ void loop()
         client.loop();
     }
     
-	delay(4000);           // wait 5 seconds for next scan
+	delay(1000);           // wait 1 seconds for next scan
 }
