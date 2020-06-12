@@ -29,7 +29,7 @@ pwm = GPIO.PWM(pins['buzzer'], 100)
 pwm.start(0)
 GPIO.output(pins['indigo'], GPIO.HIGH) # buzzer/audible alarm is enabled by default
 
-topics = {'Motion':'','Proximity':'','Light':'','Temperature':'','Humidity':'','msgReceived':''}
+topics = {'Motion':'','Proximity':'','Light':'','Temperature':'','Humidity':'','msgReceived':datetime.now()}
 
 clients = [
 {'broker':'test.mosquitto.org','port':1883,'name':'Motion','Topic':'Motion'},
@@ -188,16 +188,17 @@ if __name__ == '__main__':
     http_server = HTTPServer((host_name, host_port), MyServer)
     print("Server Starts - %s:%s" % (host_name, host_port))
 
+    # If no messages have been received for 5 minutes blink the green led
+    while true:
+        t = datetime.now() - topics['msgReceived']
+        if (t.total_seconds() > 300):
+            GPIO.output(21, GPIO.HIGH)
+            time.sleep(1)
+            GPIO.output(21, GPIO.LOW)
+            time.sleep(1)
+                
     try:
         http_server.serve_forever()
-        # If no messages have been received for 5 minutes blink the green led
-        while true:
-            t = datetime.now() - topics['msgReceived']
-            if (t.total_seconds() > 300):
-                GPIO.output(21, GPIO.HIGH)
-                time.sleep(2)
-                GPIO.output(21, GPIO.LOW)
-                time.sleep(2)
                 
     except KeyboardInterrupt:
         http_server.server_close()
